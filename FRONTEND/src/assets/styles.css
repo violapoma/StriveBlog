@@ -1,0 +1,154 @@
+:root{
+  --primary-color: #8A8CAC; 
+  --secondary-color: #FBCFE8;
+  --neutral-light-color: #9DACCC; 
+  --neutral-medium-color: #C0C9DB;
+  --primary-text-color: #121524;
+  --title-text-color: #4B1535;
+  --title-text-hover: #BB8588;
+  --emph-color: #3A3E6C; 
+}
+.bgEmph{
+  background-color: var(--emph-color) !important;
+}
+.titleColor{
+  color: var(--title-text-color);
+}
+
+/* general styles */
+body{
+  background-color: var(--neutral-medium-color);
+  color: var(--primary-text-color);
+  font-family: "Helvetica", "Arial", sans-serif;
+}
+a{
+  text-decoration: none;
+  color: inherit;
+}
+p{
+  font-size: 1.3em;
+}
+section {
+  background-color: var(--neutral-light-color);
+  color: var(--primary-text-color);
+}
+
+footer {
+  height: 20vh; 
+  background-color: var(--neutral-light-color);
+}
+
+/* nav */
+.navbarStyle{
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+}
+#nav-avatar-dropdown{
+  cursor: pointer;
+}
+.dropdown-menu{
+  background-color: var(--neutral-light-color) !important;
+  color: var(--primary-text-color) !important;
+  box-shadow: var(--emph-color) 0px 3px 3px 0px;
+}
+.dropdown-menu>a{
+  width: 80%;
+  margin: auto;
+  padding: 0.3em 0.7em;
+}
+.dropdown-menu>a:hover{
+  /* font-weight: 600; */
+  transform: scale(1.03) translateX(10px);
+  transition: transform 0.5s linear;
+  background-color: inherit;
+}
+.dropdownAvatar{
+  width: 3em;
+  height: 3em;
+  object-fit: cover;
+}
+
+/* home */
+.homeAlert{
+  background-color: var(--neutral-light-color);
+  color: var(--primary-text-color);
+  border: none;
+}
+
+/* author preview */
+.authorCard:hover{
+  transform: scale(1.03);
+  transition: transform 0.2s linear;
+}
+/* post preview */
+.postPreviewImg {
+  width: 90%;
+  height: 200px;
+  object-fit: cover;
+}
+.postPreview:hover, .profilePreview:hover{
+  transform: scale(1.01) translateX(10px);
+  transition: transform 0.2s linear;
+}
+
+.badge-coding{
+  background-color: var(--emph-color) !important;
+}
+.badge-mental-health{
+  background-color: var(--title-text-color) !important;
+}
+.badge-default{
+  background-color: var(--primary-color) !important;
+  color: var(--primary-text-color);
+}
+
+/* user profile */
+.profileImg {
+  width: 4em;
+  height: 4em; 
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* post details */
+#postContent{
+  width: 80%;
+  margin: 3em auto;
+}
+.postImg{
+  display: block;
+  width: 80%;
+  margin: auto;
+  object-fit: contain;
+}
+
+/* add post */
+.coverPreview{
+  display: block;
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  margin:auto;
+}
+.ql-container{
+  background-color: white;
+}
+.my-editor .ql-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  height: 40vh;
+}
+.my-editor {
+  width: 100%;
+}
+.preview-box {
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: whitesmoke;
+}
+.preview-content {
+  line-height: 1.6;
+}

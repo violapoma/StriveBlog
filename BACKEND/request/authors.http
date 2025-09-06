@@ -1,0 +1,33 @@
+GET http://localhost:4000/api/v1/authors
+###
+
+GET http://localhost:4000/api/v1/authors/3
+###
+
+POST http://localhost:4000/api/v1/authors
+Content-Type:application/json
+
+{
+  "_id": 3,
+  "name": "Viola",
+  "surname": "Lalala",
+  "email": "violalala@blabla.com",
+  "birthDate": "16-05-1997",
+  "avatar": ""
+}
+###
+
+PUT http://localhost:4000/api/v1/authors/3
+Content-Type:application/json
+
+{
+  "_id": 3,
+  "name": "Viola",
+  "surname": "Poma",
+  "email": "violalalaP@blabla.com",
+  "birthDate": "16-05-1997",
+  "avatar": ""
+}
+###
+
+DELETE http://localhost:4000/api/v1/authors/3
