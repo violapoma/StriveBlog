@@ -1,8 +1,7 @@
-import { Badge, Col, Row } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { Badge, Col, Image, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 function PostPreview({ post }) {
-
   function getTextPreview(html, maxLength = 200) {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = html;
@@ -13,28 +12,38 @@ function PostPreview({ post }) {
   }
 
   function normalizeCategory(category) {
-    console.log('normalized category', category.toLowerCase().replace(/\s+/g, '-'))
-    return category.toLowerCase().replace(/\s+/g, '-');
+    console.log(
+      "normalized category",
+      category.toLowerCase().replace(/\s+/g, "-")
+    );
+    return category.toLowerCase().replace(/\s+/g, "-");
   }
 
-  const knownCategories = ['coding', 'mental-health']; 
+  const knownCategories = ["coding", "mental-health", "vegan"];
   const normalized = normalizeCategory(post.category);
   const isKnown = knownCategories.includes(normalized);
-  const categoryClass = isKnown ? `fw-normal badge-${normalized}` : 'fw-semibold badge-default';
+  const categoryClass = isKnown
+    ? `fw-normal badge-${normalized}`
+    : "fw-semibold badge-default";
 
   return (
-    <Link to={`/posts/${post._id}`} >
+    <Link to={`/posts/${post._id}`}>
       <Row className="mb-3 align-items-center rounded-2 postPreview">
         <Col sm={9}>
-          <p className="fw-bold">{post.author}</p>
+     
+          <p className="fw-bold">
+            {post.author.nome} {post.author.cognome}
+          </p>
           <h2 className="fw-bolder">{post.title}</h2>
           <div className="d-flex align-items-center justify-content-between">
-          <h3 className="d-inline fs-4">
-            <Badge pill className={categoryClass}>{post.category.toUpperCase()}</Badge>
-          </h3>
-          <h4 className="d-inline fs-6">
-            {post.readTime.value} {post.readTime.unit} read
-          </h4>
+            <h3 className="d-inline fs-4">
+              <Badge pill className={categoryClass}>
+                {post.category.toUpperCase()}
+              </Badge>
+            </h3>
+            <h4 className="d-inline fs-6">
+              {post.readTime.value} {post.readTime.unit} read
+            </h4>
           </div>
           <p>{getTextPreview(post.content)}</p>
         </Col>

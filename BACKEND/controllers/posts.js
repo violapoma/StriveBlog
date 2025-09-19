@@ -7,7 +7,7 @@ import sanitizeHtml from '../sanitize.js';
  */
 export async function getAll(request, response){
   try{
-    const posts = await Post.find(); 
+    const posts = await Post.find().populate('author'); 
     response.status(200).json(posts);
   } catch (err) {
     response
@@ -25,7 +25,7 @@ export async function get(request, response) {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return response.status(404).json({ message: "ID non valido" });
     }
-    const post = await Post.findById(id); 
+    const post = await Post.findById(id).populate('author');
   
     if (!post)
       return response.status(404).json({ message: "post non trovato" });
@@ -43,7 +43,7 @@ export async function get(request, response) {
  */
 export async function add(request, response) {
   try {
-    const {category, title, cover, readTime, author, content} = request.body; 
+    const {category, title, cover, readTime, content} = request.body; 
 
     const cleanContent = sanitizeHtml(content);
   
@@ -52,7 +52,7 @@ export async function add(request, response) {
       title,
       cover,
       readTime,
-      author, 
+      author: request.author._id, //referencing, utente loggato
       content: cleanContent
     }); 
   
@@ -67,7 +67,8 @@ export async function add(request, response) {
 }
 
 /*
- * modifica un post
+ * modifica un post 
+ * TODO: controlla che l'id del post appartenga all'id dell'autore 
  */
 export async function edit(request, response) {
   try {
@@ -76,12 +77,12 @@ export async function edit(request, response) {
       return response.status(404).json({ message: "ID non valido" });
     }
 
-    const {category, title, cover, readTime, author, content} = request.body; 
+    const {category, title, cover, readTime, content} = request.body; 
  
     const cleanContent = sanitizeHtml(content);
     const updatedPost = await Post.findByIdAndUpdate(
       id,
-      {category, title, cover, readTime, author, content: cleanContent },
+      {category, title, cover, readTime, content: cleanContent },
       {new:true} 
     );
     if (!updatedPost) {

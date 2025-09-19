@@ -3,23 +3,29 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "../../data/axios";
 import parse from "html-react-parser"; //per quill
 import { Alert, Button, Container, Modal } from "react-bootstrap";
-import Footer from "../components/Footer";
+import { useAuthContext } from "../contexts/authContext";
+import Loader from "../components/Loader";
 
 function PostDetails() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams(); //id del post
+  const {token, userId} = useAuthContext(); 
 
   const [post, setPost] = useState();
   const [dateToShow, setDateToShow] = useState("");
   const [show, setShow] = useState(false);
   const [successDel, setSuccessDel] = useState(false);
+  const [isMine, setIsMine] = useState(false); 
+  const [loading, setLoading] = useState(true);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const deletePost = async () => {
     try {
-      const res = axios.delete(`/posts/${id}`);
+      const res = axios.delete(`/posts/${id}`,  {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       console.log("deleted successfully");
       setSuccessDel(true);
 
@@ -34,11 +40,20 @@ function PostDetails() {
 
   const getPost = async () => {
     try {
-      const res = await axios.get(`/posts/${id}`);
+      const res = await axios.get(`/posts/${id}`,  {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       console.log("post", res.data);
+      console.log('res.data.author._id,', res.data.author._id);
+      console.log('userId', userId); 
+      if (res.data.author._id == userId)
+        setIsMine(true); 
+
       setPost(res.data);
     } catch (e) {
       console.log("errore nel recupero del post", e);
+    } finally{
+      setLoading(false); 
     }
   };
 
@@ -59,30 +74,30 @@ function PostDetails() {
   useEffect(() => {
     if (post) {
       setDateToShow(getDate(post.createdAt));
+      console.log('ismine', isMine);
     }
   }, [post]);
 
   return (
     <>
-      {post && (
+      {loading ? <Loader /> :  (
         <Container>
           <div id="postContent">
             <div className="border-bottom my-3 pb-3">
               <h1 className="fw-bold">{post.title}</h1>
               <div className="d-flex align-items-center justify-content-between">
                 <div className="w-50 d-flex justify-content-evenly align-items-center">
-                  {/* TODO: immagine profilo autore */}
-                  <span className="fw-semibold">{post.author}</span>
-                  <Button variant="outline-secondary" className="rounded-5">
-                    Follow
-                  </Button>
+                 
+                  <Link to={isMine ? '/me' : `/authors/${post.author._id}`} >{post.author.nome} {post.author.cognome}</Link>
+                 
                   <span>
                     {post.readTime.value} {post.readTime.unit} read
                   </span>
                   <span className="mx-3">·</span>
                   <span>{dateToShow}</span>
                 </div>
-                <div>
+                {isMine && (
+                  <div>
                   <Link to={`/posts/edit-post/${id}`}>
                     <Button variant="outline-secondary" className="border-0">
                       <i className="bi bi-pencil-square"></i>
@@ -92,6 +107,7 @@ function PostDetails() {
                     <i className="bi bi-trash" onClick={handleShow}></i>
                   </Button>
                 </div>
+                )}
               </div>
             </div>
             <div className="py-3">
@@ -126,7 +142,7 @@ function PostDetails() {
         )}
       </Modal>
 
-      <Footer />
+   
     </>
   );
 }

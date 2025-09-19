@@ -15,8 +15,11 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ContentPreview from "../components/ContentPreview";
 import axios from "../../data/axios";
+import { useAuthContext } from "../contexts/authContext";
 
 function AddPost() {
+  const { token } = useAuthContext();
+
   const { id } = useParams();
   const isEdit = !!id;
 
@@ -32,7 +35,7 @@ function AddPost() {
   const handleShow = () => setShow(true);
 
   const [formData, setFormData] = useState({
-    author: "Viola",
+    author: "",
     title: "",
     category: "",
     readTime: {
@@ -44,8 +47,10 @@ function AddPost() {
 
   const fetchPost = async () => {
     try {
-      const post = await axios.get(`/posts/${id}`);
-      console.log("editing", post);
+      const post = await axios.get(`/posts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("editing", post.data);
       setFormData({ author: post.data.author, ...post.data });
     } catch (e) {
       console.log("erore fetch post da modificare", e);
@@ -133,19 +138,39 @@ function AddPost() {
     try {
       let response;
       isEdit
-        ? (response = await axios.put(`posts/${id}`, finalData))
-        : (response = await axios.post("/posts", finalData));
+        ? (response = await axios.put(
+          `/posts/${id}`,
+          finalData, // dati corretti
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // qui va il token
+            },
+          }))
+        : (response = await axios.post(
+            "/posts",
+            finalData,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          ));
       console.log("Post creato/modificato con successo:", response.data);
       const idPost = response.data._id; //var 'id' solo se faccio edit
       if (cover) {
         const fData = new FormData();
         fData.append("cover", cover);
 
-        const resCover = await axios.patch(`posts/${idPost}/cover`, fData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const resCover = await axios.patch(
+          `posts/${idPost}/cover`,
+          fData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         console.log("resCover", resCover.data);
       }
       handleShow();
@@ -228,6 +253,7 @@ function AddPost() {
             md={3}
             className="d-flex align-items-center justify-content-center"
           >
+            {/* TODO: non si aggiorna live */}
             <img
               src={
                 formData.cover

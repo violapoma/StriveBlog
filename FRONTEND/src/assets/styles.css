@@ -7,9 +7,16 @@
   --title-text-color: #4B1535;
   --title-text-hover: #BB8588;
   --emph-color: #3A3E6C; 
+  --vegan-bg: #7D947D;
 }
 .bgEmph{
   background-color: var(--emph-color) !important;
+}
+.bgEmph:hover{
+  background-color: var(--title-text-color) !important;
+}
+.borderEmph{
+  border: 1px solid var(--emph-color) !important;
 }
 .titleColor{
   color: var(--title-text-color);
@@ -36,6 +43,17 @@ section {
 footer {
   height: 20vh; 
   background-color: var(--neutral-light-color);
+}
+
+.button:hover{
+  transform: scale(1.2);
+  transition: transform 0.3s linear;
+}
+
+/* loader */
+.loaderContainer{
+  /* opacity: 0.5; */
+  z-index: 9999;
 }
 
 /* nav */
@@ -67,12 +85,21 @@ footer {
   height: 3em;
   object-fit: cover;
 }
-
+.dropdown-header {
+  color: var(--primary-text-color);
+  font-size: large;
+  font-weight: 600;
+}
 /* home */
 .homeAlert{
   background-color: var(--neutral-light-color);
   color: var(--primary-text-color);
   border: none;
+}
+.accordion-button, .accordion-button:not(.collapsed){
+  background-color: var(--primary-color);
+  color: var(--primary-text-color);
+  box-shadow: none !important;
 }
 
 /* author preview */
@@ -81,6 +108,7 @@ footer {
   transition: transform 0.2s linear;
 }
 /* post preview */
+
 .postPreviewImg {
   width: 90%;
   height: 200px;
@@ -97,16 +125,42 @@ footer {
 .badge-mental-health{
   background-color: var(--title-text-color) !important;
 }
+.badge-vegan{
+  background-color: var(--vegan-bg) !important;
+}
 .badge-default{
   background-color: var(--primary-color) !important;
   color: var(--primary-text-color);
 }
 
+/* add user*/
+.avatarPreview{
+  display: block;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin:auto;
+  border-radius: 50%;
+  border: 5px solid var(--primary-text-color);
+}
+
 /* user profile */
 .profileImg {
+  width: 6em;
+  height: 6em; 
+  object-fit: cover;
+  border-radius: 50%;
+}
+.vh85{
+  height: 85vh;
+}
+.vh90{
+  height: 90vh;
+}
+.profilePreviewImg{
   width: 4em;
   height: 4em; 
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 50%;
 }
 

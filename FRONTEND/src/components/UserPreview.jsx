@@ -5,14 +5,14 @@ function UserPreview({ profile }) {
   // se l'avatar non è impostato
   let imgToUse =
     profile.avatar == ""
-      ? "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+      ? "https://res.cloudinary.com/dm9gnud6j/image/upload/v1757176661/nopicuser_puf2bd.png"
       : profile.avatar;
 
   return (
     <Link to={`/authors/${profile._id}`}>
       <Row className="profilePreview">
         <Col sm={3}>
-          <img src={imgToUse} alt="profile pic" className="profileImg" />
+          <img src={imgToUse} alt="profile pic" className="profilePreviewImg" />
         </Col>
         <Col sm={9}>
           <h2 className="fs-3">{profile.nome} · {profile.cognome}</h2>
