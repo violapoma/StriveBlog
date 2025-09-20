@@ -55,14 +55,14 @@ export function AuthProvider({ children }) {
       console.error("fetchLoggedUser error:", err);
       logout();
     }
-    
   };
-  //salva l'utente loggato o rirotna errore
+
+  //salva l'utente loggato 
   useEffect(() => {
     if (token) {
       console.log("authContext token", token);
       fetchLoggedUser();
-    }
+    } 
   }, [token]);
 
   return (

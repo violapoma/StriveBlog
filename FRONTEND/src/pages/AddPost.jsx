@@ -133,7 +133,7 @@ function AddPost() {
       content: cleanContent,
     };
 
-    setValidated(true); // opzionale, se hai validazione visuale
+    setValidated(true); 
 
     try {
       let response;

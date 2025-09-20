@@ -4,7 +4,6 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v4 as uuidv4 } from "uuid"; // genera UUID univoci
 
 
-
 // Config Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

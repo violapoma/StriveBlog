@@ -12,14 +12,11 @@ function PostPreview({ post }) {
   }
 
   function normalizeCategory(category) {
-    console.log(
-      "normalized category",
-      category.toLowerCase().replace(/\s+/g, "-")
-    );
+    console.log('norm category', category.toLowerCase().replace(/\s+/g, "-") )
     return category.toLowerCase().replace(/\s+/g, "-");
   }
 
-  const knownCategories = ["coding", "mental-health", "vegan"];
+  const knownCategories = ["coding", "mental-health", "vegan", "gaming", 'world-news','anime'];
   const normalized = normalizeCategory(post.category);
   const isKnown = knownCategories.includes(normalized);
   const categoryClass = isKnown
@@ -30,7 +27,6 @@ function PostPreview({ post }) {
     <Link to={`/posts/${post._id}`}>
       <Row className="mb-3 align-items-center rounded-2 postPreview">
         <Col sm={9}>
-     
           <p className="fw-bold">
             {post.author.nome} {post.author.cognome}
           </p>

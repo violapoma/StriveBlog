@@ -1,7 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 import CommentScheme from "./Comment.js";
 
-// TODO: REFERENCING autore
 const PostScheme = new Schema({
   category: {type: String, required: true},
   title: {type: String, required: true}, 
@@ -13,10 +12,20 @@ const PostScheme = new Schema({
     },
     unit: String,
   },
-  author: {type: Schema.Types.ObjectId, ref: 'Author'},
+  author: {type: Schema.Types.ObjectId, ref: 'Author'}, //ref
   content: {type: String, required: true},
   comments: [CommentScheme] //embedding 
 }, {timestamps: true}); 
+
+
+// Virtual field per contare i commenti -> ordine di popolarità
+PostScheme.virtual("commentsCount").get(function () {
+  return this.comments.length;
+});
+
+
+PostScheme.set("toJSON", { virtuals: true });
+PostScheme.set("toObject", { virtuals: true });
 
 const Post = mongoose.model('Post', PostScheme); 
 

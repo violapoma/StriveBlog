@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 const AuthorScheme = new Schema({
   nome: {type: String, required: true, trim: true}, //condizioni; se è una sola non serve passarla come oggetto
-  cognome: {type: String, required: true, trim: true},
+  cognome: {type: String, trim: true},
   email: {type: String, required: true, unique: true, trim: true},
   dataDiNascita: {type: String}, //meglio salvare string invece di Date //required
   avatar: {type: String, default: 'https://res.cloudinary.com/dm9gnud6j/image/upload/v1757176661/nopicuser_puf2bd.png'},

@@ -14,6 +14,7 @@ function UserProfile({ isMe }) {
 
   const [author, setAuthor] = useState();
   const [authorPosts, setAuthorPosts] = useState([]);
+
   const [loadingUser, setLoadingUser] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
 
@@ -52,7 +53,7 @@ function UserProfile({ isMe }) {
   const getPosts = async () => {
     try {
       console.log("Provo a prendere i post");
-      const allPosts = await axios.get("/posts", {
+      const allPosts = await axios.get(`/authors/${author._id}/posts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -64,15 +65,16 @@ function UserProfile({ isMe }) {
       console.log("userId ", userId);
       console.log("idToUse ", idToUse);
 
-      const filteredPosts = allPosts.data.filter(
-        (post) =>
-          post.author &&
-          post.author._id &&
-          post.author._id.toString() === idToUse
-      );
+      // const filteredPosts = allPosts.data.filter(
+      //   (post) =>
+      //     post.author &&
+      //     post.author._id &&
+      //     post.author._id.toString() === idToUse
+      // );
 
-      console.log("Posts filtrati per autore:", filteredPosts);
-      setAuthorPosts(filteredPosts);
+      
+      console.log("Posts filtrati per autore:", allPosts.data);
+      setAuthorPosts(allPosts.data);
     } catch (err) {
       console.error("Errore nel recupero dei post dello user:", err);
     } finally {

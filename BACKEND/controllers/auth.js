@@ -35,6 +35,33 @@ export async function register(request, response) {
   await newAuthor.save();
 
   const token = await signJWT({ id: newAuthor._id });
+  try {
+    const html = `
+      <h1>Hi, ${nome} ${cognome}, <b>WELCOME ON BOARD!</b></h1>
+      <h2>Our guidelines</h2>
+      <p>Please, remember to post only appropriate content. What's inappropriate contet you ask? Well, you shouldn't. That being said, we hope to have a nice time together 🥰</p>
+      <h2>When will you recive an email from us?</h2>
+      <ul>
+        <li>When you post a new article</li>
+        <li>When a fellow author comments your article</li>
+      </ul>
+      <br>
+      <p>→<a href='${process.env.FRONTEND_HOST}/authors/${newAuthor._id}'>CLICK HERE</a>← to visit your profile</p>
+    `;
+    
+    const infoMail = await mailer.sendMail({
+      to: email, 
+      subject: "Thanks for joining us!",
+      html: html,
+      from: "violapoma@gmail.com", 
+    });
+
+    console.log("Mail sent. MessageId:", infoMail.messageId);
+    console.log("SMTP response:", infoMail.response);
+  } catch (mailErr) {
+    console.error("Errore invio email commento:", mailErr);
+  }
+
   return response.status(201).json({ jwt: token });
 }
 

@@ -12,6 +12,7 @@ import authMW from "./middlewares/authMW.js";
 import profileRouter from "./profile.js";
 import passport from "passport";
 import googleStrategy from "./config/passportConfig.js";
+import { validateId } from "./middlewares/validateId.js";
 
 const server = express(); //server di base, che va personalizzato
 
@@ -30,7 +31,7 @@ server.use("/auth", authRouter);
 server.use('/me', profileRouter); 
 server.use("/authors", authorsRouter); //mw
 server.use("/posts", postsRouter); //mw ; tutti in ordine di esecuzione
-server.use("/posts", authMW, commentsRouter);
+server.use("/posts", commentsRouter);
 
 connectDB();
 server.listen(port, () => console.log(`server avviato sulla porta ${port}`)); //sta sempre in ascolto

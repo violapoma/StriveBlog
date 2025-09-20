@@ -1,5 +1,5 @@
 import express from "express";
-import { get, getAll, } from "./controllers/authors.js";
+import { get, getAll, getAuthorPosts, } from "./controllers/authors.js";
 import {uploadAvatar} from "./middlewares/uploadCloudinary.js";
 import authMW from "./middlewares/authMW.js";
 import { validateId } from "./middlewares/validateId.js";
@@ -11,5 +11,6 @@ authorsRouter.get('/', getAll);
 authorsRouter.get('/:id', validateId ,get);
 //authorsRouter.put('/:id',authMW, edit); 
 //authorsRouter.patch('/:id/avatar', authMW, uploadAvatar.single('avatar'), addAvatar); 
-//authorsRouter.delete('/:id', authMW, remove); 
+//authorsRouter.delete('/:id', authMW, remove);
+authorsRouter.get('/:id/posts', validateId, getAuthorPosts) ;
 export default authorsRouter;

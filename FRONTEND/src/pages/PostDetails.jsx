@@ -5,6 +5,7 @@ import parse from "html-react-parser"; //per quill
 import { Alert, Button, Container, Modal } from "react-bootstrap";
 import { useAuthContext } from "../contexts/authContext";
 import Loader from "../components/Loader";
+import CommentArea from "../components/CommentArea";
 
 function PostDetails() {
   const navigate = useNavigate();
@@ -88,8 +89,8 @@ function PostDetails() {
               <div className="d-flex align-items-center justify-content-between">
                 <div className="w-50 d-flex justify-content-evenly align-items-center">
                  
-                  <Link to={isMine ? '/me' : `/authors/${post.author._id}`} >{post.author.nome} {post.author.cognome}</Link>
-                 
+                  <Link to={isMine ? '/me' : `/authors/${post.author._id}`} className="authorLink">{post.author.nome} {post.author.cognome}</Link>
+                  <span className="mx-3">·</span>
                   <span>
                     {post.readTime.value} {post.readTime.unit} read
                   </span>
@@ -100,11 +101,11 @@ function PostDetails() {
                   <div>
                   <Link to={`/posts/edit-post/${id}`}>
                     <Button variant="outline-secondary" className="border-0">
-                      <i className="bi bi-pencil-square"></i>
+                      <i className="bi bi-pencil-square" />
                     </Button>
                   </Link>
-                  <Button variant="outline-secondary" className="border-0">
-                    <i className="bi bi-trash" onClick={handleShow}></i>
+                  <Button variant="outline-secondary" className="border-0" onClick={handleShow}>
+                    <i className="bi bi-trash" />
                   </Button>
                 </div>
                 )}
@@ -115,6 +116,7 @@ function PostDetails() {
             </div>
             <div>{parse(post.content)}</div>
           </div>
+          <CommentArea />
         </Container>
       )}
 

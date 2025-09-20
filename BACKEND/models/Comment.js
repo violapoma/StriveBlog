@@ -5,4 +5,5 @@ const CommentScheme = new Schema({
   author: {type: Schema.Types.ObjectId, ref: 'Author'}
 }, {timestamps: true})
 
+
 export default CommentScheme; //embedding -> no .model => esiste solo per articolo, no collection

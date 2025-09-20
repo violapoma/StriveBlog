@@ -15,7 +15,7 @@ import { useAuthContext } from "../contexts/authContext";
 import Loader from "../components/Loader";
 
 function AddAuthor({ isEdit }) {
-  const { token, userId, setLoggedUser } = useAuthContext();
+  const { token, userId, setLoggedUser, logout } = useAuthContext();
 
   const navigate = useNavigate();
 
@@ -64,14 +64,14 @@ function AddAuthor({ isEdit }) {
   };
   const deleteAccount = async () => {
     try {
-      const res = await axios.delete(`/authors/${userId}`, {
+      const res = await axios.delete(`/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log("account eliminato");
       setTimeout(() => {
         handleClose();
-        navigate(`/`);
-        // TODO: fai logout
+        logout();
+        // navigate(`/`);
       }, 1000);
     } catch (error) {
       console.log("errore nella cancellazione account", error);
@@ -175,12 +175,12 @@ function AddAuthor({ isEdit }) {
         );
         console.log(avatarRes.data);
       }
-      setLoggedUser(res.data); //aggiorna l'avatar
+      setLoggedUser(res.data); //aggiorna l'utente
 
       handleShow();
       setTimeout(() => {
         handleClose();
-        navigate(`/`);
+        navigate('/');
       }, 1000);
     } catch (error) {
       console.error("Errore durante la creazione/modifica dell'autore", error);
@@ -301,7 +301,6 @@ function AddAuthor({ isEdit }) {
 
             {isEdit && (
               <Button
-                type="submit"
                 variant="secondary"
                 className="mt-4 w-100"
                 onClick={handleDelete}

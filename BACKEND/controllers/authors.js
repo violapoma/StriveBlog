@@ -1,4 +1,5 @@
 import Author from "../models/Author.js";
+import Post from "../models/Post.js";
 
 export async function getAll(request, response) {
   try {
@@ -28,6 +29,21 @@ export async function get(request, response) {
   }
 }
 
+// post di un singolo autore
+export async function getAuthorPosts(request, response){
+  try{
+    const {id} = request.params; 
+    const author = await Author.findById(id);
+    if (!author)
+      return response.status(404).json({ message: "[getAuthorPosts]autore non trovato" });
+    const posts = await Post.find({author: id}).populate('author'); 
+    response.status(200).json(posts);
+  } catch(err) {
+    response
+    .status(500)
+    .json({ message: "errore nel recupero dei post del singolo autore", error });
+  }
+}
 
 // export async function add(request, response) {
 //   try {

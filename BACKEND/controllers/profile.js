@@ -1,4 +1,5 @@
 import Author from "../models/Author.js";
+import Post from "../models/Post.js";
 
 export async function getMe(request, response) {
   try {
@@ -78,18 +79,81 @@ export async function edit(request, response) {
   }
 }
 
-export async function deleteMe(request, response) {
+export async function deleteMe(req, res) {
   try {
-    const id  = request.author._id;
+    const id = req.author._id;
 
-    const toRemove = await Author.findByIdAndDelete(id);
-    if (!toRemove) {
-      return response.status(404).json({ message: "[delME]:autore non trovato" });
+    //elimino i commenti -embedded -> pull da array
+    await Post.updateMany(
+      { "comments.author": id }, 
+      { $pull: { comments: { author: id } } }
+    );
+
+    //elimino i miei post
+    try{
+      await Post.deleteMany({ author: id });
+    } catch(error){
+      res.status(500).json({ message: "Errore durante la cancellazione, Post.deleteMany", error });
     }
-    response.status(200).json(toRemove);
+
+    // mi elimino x.x
+    try{
+      await Author.findByIdAndDelete(id);
+    } catch(error){
+      res.status(500).json({ message: "Errore durante la cancellazione, Author.findanddelete", error });
+    }
+
+    res.status(200).json({ message: "Autore e contenuti associati eliminati" });
+  } catch (error) {
+    res.status(500).json({ message: "Errore durante la cancellazione", error });
+  }
+}
+
+/*
+ *  elimina tutti i post di un autore (quando l'autore si cancella) 
+ */
+export async function removeAllPosts(request, response) {
+  try {
+    const { id } = request.params; // id autore
+
+    const author = await Author.findById(id);
+    if (!author) {
+      return response.status(404).json({ message: "autore non trovato" });
+    }
+
+    const result = await Post.deleteMany({ author: id });
+
+    response.status(200).json({
+      message: `Eliminati ${result.deletedCount} post dell'autore`,
+    });
   } catch (error) {
     response
       .status(500)
-      .json({ message: "errore nell'eliminazione dell'autore", error });
+      .json({ message: "errore nell'eliminazione dei post", error });
+  }
+}
+
+/*
+ *  rimuove tutti i commenti dell'autore 
+ */
+
+export async function removeAllComments(request,response){
+  try {
+    const { id } = request.params; // id autore
+
+    const author = await Author.findById(id);
+    if (!author) {
+      return response.status(404).json({ message: "autore non trovato" });
+    }
+
+    const result = await Post.deleteMany({ author: id });
+
+    response.status(200).json({
+      message: `Eliminati ${result.deletedCount} post dell'autore`,
+    });
+  } catch (error) {
+    response
+      .status(500)
+      .json({ message: "errore nell'eliminazione dei post", error });
   }
 }
