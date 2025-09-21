@@ -26,7 +26,7 @@ server.use("/auth", authRouter);
 server.use('/me', profileRouter); 
 server.use("/authors", authorsRouter); 
 server.use("/posts", postsRouter); 
-server.use("/posts", validateId, commentsRouter);
+server.use("/posts", commentsRouter);
 
 connectDB();
 server.listen(port, () => console.log(`server avviato sulla porta ${port}`)); //sta sempre in ascolto
