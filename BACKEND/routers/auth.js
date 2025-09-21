@@ -18,7 +18,7 @@ authRouter.get(
   passport.authenticate("google", {
     session: false,
     failureRedirect: "/login",
-    successRedirect: "/posts",
+    successRedirect: `${process.env.FRONTEND_HOST}/posts`,
   }), //false perché non stiamo usando i coockies
   redirectToMe
 );
