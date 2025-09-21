@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import axios from "../../data/axios";
 
 const AuthContext = createContext();
@@ -7,8 +7,6 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loggedUser, setLoggedUser] = useState(null);
-  //const [searchParams] = useSearchParams();
-  //const jwt = searchParams.get("jwt");
   const navigate = useNavigate();
 
   const login = (jwt) => {
@@ -36,14 +34,6 @@ export function AuthProvider({ children }) {
     }
   }, [token]);
 
-  //per google
-  /*
-  useEffect(() => {
-    if (jwt) {
-      login(jwt);
-    }
-  }, [jwt, navigate, setToken]);
-*/
   const fetchLoggedUser = async () => {
     if (!token) return;
     try {
@@ -67,8 +57,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ token, loggedUser, userId, setToken, setLoggedUser, login, logout }}
-    >
+      value={{ token, loggedUser, userId, setToken, setLoggedUser, login, logout }} >
       {children}
     </AuthContext.Provider>
   );

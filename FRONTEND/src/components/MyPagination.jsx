@@ -4,16 +4,8 @@ function MyPagination({ howManyPages, active, setActive }) {
   let items = [];
 
   function handlePage(newPage) {
-    // window.location.search = `?page=${newPage}`; NOPE
     const url = new URL(window.location);
     url.searchParams.set("page", newPage);
-    /**
-     * window.history.pushState(stateObj, title, url)
-     * stateObj -> oggetto per salvare i dati di stato
-     * title -> titolo della pagina (ignorato)
-     * url -> url della pagina
-     * => questo non fa reload, prima mi prendo l'url in una variabile e modifico questa così non perdo la categoria
-     */
     window.history.pushState({}, "", url);
     setActive(newPage);
   }

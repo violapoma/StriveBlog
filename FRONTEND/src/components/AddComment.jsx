@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import DOMPurify from "dompurify";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import ErrorModal from "./ErrorModal";
 
 function AddComment({
   commentToEdit,
@@ -16,12 +17,14 @@ function AddComment({
   setScrollCommentId,
   setIsAccordionOpen,
 }) {
-  const { token, loggedUser } = useAuthContext();
+  const { loggedUser } = useAuthContext();
   const { id } = useParams(); // id post
   const isEdit = commentToEdit && commentToEdit._id ? true : false; // true se sto editando
 
   const quillRef = useRef(null);
 
+  const [consoleMsg, setConsoleMsg] = useState('');
+  const [show, setShow] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
   const [validated, setValidated] = useState(false);
   const [formData, setFormData] = useState({
@@ -85,11 +88,6 @@ function AddComment({
     setValidated(true);
     setIsLoading(true);
 
-    console.log("formData", formData);
-    console.log("idPost", id);
-    console.log("commentToEdit", commentToEdit);
-    console.log("finalData", finalData);
-
     try {
       if (isEdit) {
         console.log("idCommento", commentToEdit._id);
@@ -98,17 +96,12 @@ function AddComment({
           {
             text: DOMPurify.sanitize(commentToEdit.text),
             author: commentToEdit.author._id || commentToEdit.author,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
           }
         );
         setScrollCommentId(commentToEdit._id);
-        setCommentToEdit(null); // reset
+        setCommentToEdit(null); //reset
       } else {
-        const toAdd = await axios.post(`/posts/${id}/comments`, finalData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const toAdd = await axios.post(`/posts/${id}/comments`, finalData);
         const newComment = toAdd.data;
         setScrollCommentId(newComment._id);
         setFormData({ ...formData, text: "" });
@@ -116,6 +109,8 @@ function AddComment({
       refreshComments();
       setIsAccordionOpen(false);
     } catch (err) {
+      setConsoleMsg("An error occurred while deleting your comment 😿 try again later");
+      setShow(true); 
       console.error("Errore durante il salvataggio del commento", err);
     } finally {
       setIsLoading(false);
@@ -158,6 +153,7 @@ function AddComment({
           )}
         </Row>
       </Form>
+      <ErrorModal consoleMsg={consoleMsg} show={show} setShow={setShow}/>
     </Container>
   );
 }

@@ -11,18 +11,23 @@ import Login from "./pages/Login";
 import GuestsRoutes from "./components/GuestsRoutes";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import { AuthProvider } from "./contexts/authContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ScrollToTop />
         <Header />
         <Container>
           <Routes>
             {/* l'unica rotta pubblica è login/register */}
             <Route element={<GuestsRoutes />}>
               <Route path="/login" element={<Login />} />
-              <Route path="/auth/google-callback" element={<GoogleCallback />}/>
+              <Route
+                path="/auth/google-callback"
+                element={<GoogleCallback />}
+              />
               <Route path="/auth/register" element={<AddAuthor />} />
             </Route>
             <Route element={<ProtectedRoutes />}>

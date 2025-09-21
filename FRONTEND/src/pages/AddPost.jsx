@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Container,
@@ -16,6 +16,8 @@ import "react-quill/dist/quill.snow.css";
 import ContentPreview from "../components/ContentPreview";
 import axios from "../../data/axios";
 import { useAuthContext } from "../contexts/authContext";
+import ErrorModal from "../components/ErrorModal";
+import Loader from "../components/Loader";
 
 function AddPost() {
   const { token } = useAuthContext();
@@ -26,9 +28,13 @@ function AddPost() {
   const [showPreview, setShowPreview] = useState(false); //preview del contenuto
   const [validated, setValidated] = useState(false); //validazione form
   const [cover, setCover] = useState(); //gestione coverImg
+  const [coverPreview, setCoverPreview] = useState();
+
+  const [showError, setShowError] = useState(false);
+  const [consoleMsg, setConsoleMsg] = useState("");
 
   const [show, setShow] = useState(false);
-  const [successAdd, setSuccessAdd] = useState(false);
+  const [adding, setAdding] = useState(false);
   const navigate = useNavigate();
 
   const handleClose = () => setShow(false);
@@ -53,6 +59,10 @@ function AddPost() {
       console.log("editing", post.data);
       setFormData({ author: post.data.author, ...post.data });
     } catch (e) {
+      setConsoleMsg(
+        "An error occurred while fetching your post 😿 try again later"
+      );
+      setShowError(true);
       console.log("erore fetch post da modificare", e);
     }
   };
@@ -121,11 +131,17 @@ function AddPost() {
     }));
   }
 
+  const addCover = (e) => {
+    const file = e.target.files[0];
+    setCover(file);
+    setCoverPreview(URL.createObjectURL(file));
+  };
+
   // SUBMIT
   const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-
+    setAdding(true);
     const cleanContent = DOMPurify.sanitize(formData.content);
 
     const finalData = {
@@ -133,44 +149,37 @@ function AddPost() {
       content: cleanContent,
     };
 
-    setValidated(true); 
+    setValidated(true);
 
     try {
       let response;
       isEdit
         ? (response = await axios.put(
-          `/posts/${id}`,
-          finalData, // dati corretti
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // qui va il token
-            },
-          }))
-        : (response = await axios.post(
-            "/posts",
-            finalData,
+            `/posts/${id}`,
+            finalData, // dati corretti
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`, // qui va il token
               },
             }
-          ));
+          ))
+        : (response = await axios.post("/posts", finalData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }));
       console.log("Post creato/modificato con successo:", response.data);
       const idPost = response.data._id; //var 'id' solo se faccio edit
       if (cover) {
         const fData = new FormData();
         fData.append("cover", cover);
 
-        const resCover = await axios.patch(
-          `posts/${idPost}/cover`,
-          fData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const resCover = await axios.patch(`posts/${idPost}/cover`, fData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
         console.log("resCover", resCover.data);
       }
       handleShow();
@@ -179,121 +188,128 @@ function AddPost() {
         navigate(`/posts/${idPost}`);
       }, 1000);
     } catch (error) {
+      setConsoleMsg(
+        "An error occurred while fetching your post 😿 try again later"
+      );
+      setShowError(true);
       console.error("Errore durante la creazione/modifica del post", error);
+    } finally {
+      setAdding(false);
     }
-  };
-
-  const addCover = (e) => {
-    setCover(e.target.files[0]);
   };
 
   return (
     <Container className="mt-3 px-3">
-      <h2 className="mt-3 pb-3">Write your post!</h2>
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Row className="mb-3">
-          <Col md={9}>
-            <Row>
-              <Form.Group as={Col} md="12" controlId="validationTitle">
-                <Form.Label>Title</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChanges}
+      {adding ? (
+        <Loader />
+      ) : (
+        <>
+          <h2 className="mt-3 pb-3">Write your post!</h2>
+          <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Row className="mb-3">
+              <Col md={9}>
+                <Row>
+                  <Form.Group as={Col} md="12" controlId="validationTitle">
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                      required
+                      type="text"
+                      placeholder="Title"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleChanges}
+                    />
+                  </Form.Group>
+                  <Form.Group as={Col} md="6" controlId="validationCategory">
+                    <Form.Label>Category</Form.Label>
+                    <Form.Control
+                      required
+                      type="text"
+                      placeholder="Category"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChanges}
+                    />
+                  </Form.Group>
+                  <Form.Group as={Col} md="6" controlId="validationReadTime">
+                    <Form.Label>Read time</Form.Label>
+                    <InputGroup>
+                      <Form.Control
+                        type="number"
+                        placeholder="Enter time"
+                        name="readTimeValue"
+                        value={formData.readTime.value}
+                        onChange={handleChanges}
+                        inputMode="numeric"
+                      />
+                      <Form.Select
+                        name="readTimeUnit"
+                        value={formData.readTime.unit}
+                        className="flex-grow-0 w-auto"
+                        onChange={handleChanges}
+                      >
+                        <option value="minutes">Minutes</option>
+                        <option value="hours">Hours</option>
+                      </Form.Select>
+                    </InputGroup>
+                  </Form.Group>
+                  <Form.Group as={Col} md="12" controlId="validationImage">
+                    <Form.Label>Cover image</Form.Label>
+                    <Form.Control
+                      required={!isEdit}
+                      type="file"
+                      name="cover"
+                      onChange={addCover}
+                    />
+                  </Form.Group>
+                </Row>
+              </Col>
+              <Col
+                md={3}
+                className="d-flex align-items-center justify-content-center"
+              >
+                <img
+                  src={
+                    coverPreview
+                      ? coverPreview
+                      : "https://placehold.net/default.png"
+                  }
+                  alt="cover preview"
+                  className="coverPreview"
                 />
-              </Form.Group>
-              <Form.Group as={Col} md="6" controlId="validationCategory">
-                <Form.Label>Category</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChanges}
-                />
-              </Form.Group>
-              <Form.Group as={Col} md="6" controlId="validationReadTime">
-                <Form.Label>Read time</Form.Label>
-                <InputGroup>
-                  <Form.Control
-                    type="number"
-                    placeholder="Enter time"
-                    name="readTimeValue"
-                    value={formData.readTime.value}
-                    onChange={handleChanges}
-                    inputMode="numeric"
-                  />
-                  <Form.Select
-                    name="readTimeUnit"
-                    value={formData.readTime.unit}
-                    className="flex-grow-0 w-auto"
-                    onChange={handleChanges}
-                  >
-                    <option value="minutes">Minutes</option>
-                    <option value="hours">Hours</option>
-                  </Form.Select>
-                </InputGroup>
-              </Form.Group>
-              <Form.Group as={Col} md="12" controlId="validationImage">
-                <Form.Label>Cover image</Form.Label>
-                <Form.Control
-                  required={!isEdit}
-                  type="file"
-                  name="cover"
-                  onChange={addCover}
-                />
-              </Form.Group>
+              </Col>
             </Row>
-          </Col>
-          <Col
-            md={3}
-            className="d-flex align-items-center justify-content-center"
-          >
-            {/* TODO: non si aggiorna live */}
-            <img
-              src={
-                formData.cover
-                  ? formData.cover
-                  : "https://placehold.net/default.png"
-              }
-              alt="cover preview"
-              className="coverPreview"
-            />
-          </Col>
-        </Row>
-        <Row className="mb-3">
-          <Col md={12}>
-            <Form.Group className="mb-3" controlId="validationContent">
-              <Form.Label>Content</Form.Label>
-              <ReactQuill
-                className="my-editor"
-                value={formData.content}
-                name="content"
-                modules={quillModules}
-                formats={quillFormats}
-                onChange={handleContentChanges}
-                theme="snow"
-              />
-            </Form.Group>
-            <Button
-              variant={showPreview ? "outline-secondary" : "secondary"}
-              className="mt-3"
-              onClick={() => setShowPreview((prev) => !prev)}
-            >
-              {showPreview ? "Hide text preview" : "Show text preview"}
-            </Button>
-          </Col>
-          <Col md={12}>
-            {showPreview && <ContentPreview content={formData.content} />}
-          </Col>
-        </Row>
+            <Row className="mb-3">
+              <Col md={12}>
+                <Form.Group className="mb-3" controlId="validationContent">
+                  <Form.Label>Content</Form.Label>
+                  <ReactQuill
+                    className="my-editor"
+                    value={formData.content}
+                    name="content"
+                    modules={quillModules}
+                    formats={quillFormats}
+                    onChange={handleContentChanges}
+                    theme="snow"
+                  />
+                </Form.Group>
+                <Button
+                  variant={showPreview ? "outline-secondary" : "secondary"}
+                  className="mt-3"
+                  onClick={() => setShowPreview((prev) => !prev)}
+                >
+                  {showPreview ? "Hide text preview" : "Show text preview"}
+                </Button>
+              </Col>
+              <Col md={12}>
+                {showPreview && <ContentPreview content={formData.content} />}
+              </Col>
+            </Row>
 
-        <Button type="submit">Submit form</Button>
-      </Form>
+            <Button type="submit">Submit form</Button>
+          </Form>
+        </>
+      )}
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton className="border-0" />
@@ -301,6 +317,12 @@ function AddPost() {
           <Alert variant="success">Post created successfully!</Alert>
         </Modal.Body>
       </Modal>
+
+      <ErrorModal
+        consoleMsg={consoleMsg}
+        show={showError}
+        setShow={setShowError}
+      />
     </Container>
   );
 }

@@ -39,6 +39,12 @@ a{
   text-decoration: none;
   color: inherit;
 }
+iframe{
+  width: 12em;
+  height: 12em;
+  background-color: var(--gaming-bg);
+  border-radius: 50%;
+}
 p{
   font-size: 1.3em;
 }
@@ -46,20 +52,37 @@ section {
   background-color: var(--neutral-light-color);
   color: var(--primary-text-color);
 }
-
 footer {
-  height: 20vh; 
+  height: 15em;
   background-color: var(--neutral-light-color);
 }
-
+footer h2{
+  padding-right: 0.5em;
+}
+footer ul{
+  padding-right: 1em;
+}
+footer li{
+  list-style-type: none;
+}
+footer li:hover, footer button:hover{
+  transform: scale(1.2) translateX(-30px);
+  transition: transform 0.5s var(--hover-transition); 
+}
+footer button{
+  margin-right: 0.3em;
+}
 .button:hover{
+  transform: scale(1.2);
+  transition: transform 0.3s var(--hover-transition) ;
+}
+svg:hover {
   transform: scale(1.2);
   transition: transform 0.3s var(--hover-transition) ;
 }
 
 /* loader */
 .loaderContainer{
-  /* opacity: 0.5; */
   z-index: 9999;
 }
 
@@ -82,7 +105,6 @@ footer {
   padding: 0.3em 0.7em;
 }
 .dropdown-menu>a:hover{
-  /* font-weight: 600; */
   transform: scale(1.03) translateX(10px);
   transition: transform 0.5s var(--hover-transition);
   background-color: inherit;
@@ -116,8 +138,8 @@ footer {
   transform: scale(1.03);
   transition: transform 0.2s var(--hover-transition);
 }
-/* post preview */
 
+/* post preview */
 .postPreviewImg {
   width: 90%;
   height: 200px;

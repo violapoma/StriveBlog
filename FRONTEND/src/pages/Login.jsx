@@ -1,30 +1,27 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import { Button, Form, Container, Modal, Accordion } from "react-bootstrap";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "../../data/axios";
 import { useAuthContext } from "../contexts/authContext";
+import ErrorModal from "../components/ErrorModal";
 
 function Login() {
+
+  const [showError, setShowError] = useState(false); 
+  const [consoleMsg, setConsoleMsg] = useState('');
+
   const [showLogin, setShowLogin] = useState();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const { token, login } = useAuthContext();
+  const { login } = useAuthContext();
   const navigate = useNavigate();
 
   const googleLogInPath = `${import.meta.env.VITE_BACKEND_HOST}${import.meta.env.VITE_GOOGLE_PATH}`;
   const showPath = () => console.log('googleLoginPath ',googleLogInPath);
-  //se l'utente è loggato mi rimanda a LoggedHome
-  /*
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken || token) {
-      navigate("/login");
-    }
-  }, [navigate, token]);
-*/
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -32,22 +29,6 @@ function Login() {
       [name]: value,
     }));
   };
-
-  //per gestire l'autenticazione con google che mi passa il jwt come queryparam
-  /*
-  const [searchParams] = useSearchParams(); //per i query params
-  useEffect(()=>{
-    const token = searchParams.get('jwt');
-    if(token) {
-      setToken(token); 
-      login(token); 
-      //localStorage.setItem('token', token);  questo no
-      navigate('/');
-    }
-  },[]);
-  const googleLogin = () =>{
-    window.location.href=googleLogInPath; 
-  }*/
 
   const handleLogin = async (evt) => {
     evt.preventDefault();
@@ -61,6 +42,8 @@ function Login() {
         navigate("/");
       }
     } catch (err) {
+      setConsoleMsg("Your logging credentials are wrong, please check again");
+      setShowError(true); 
       console.log("errore di login", err);
     }
     setShowLogin(false);
@@ -140,6 +123,7 @@ function Login() {
           </Modal.Body>
         </Modal>
       )}
+      <ErrorModal consoleMsg={consoleMsg} show={showError} setShow={setShowError} />
     </Container>
   );
 }

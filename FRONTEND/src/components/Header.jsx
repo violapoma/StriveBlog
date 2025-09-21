@@ -1,12 +1,7 @@
-import {
-  Container,
-  Image,
-  Nav,
-  NavDropdown,
-  Navbar,
-} from "react-bootstrap";
+import { Container, Image, Nav, NavDropdown, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../contexts/authContext";
+import Logo from "./Logo";
 
 function Header() {
   const { token, logout, loggedUser } = useAuthContext();
@@ -15,14 +10,12 @@ function Header() {
     <Navbar expand="lg" className="navbarStyle">
       <Container className="d-flex align-items-center">
         <Navbar.Brand
-          to="/"
           as={Link}
+          to="/"
           className="py-0 me-2 d-flex align-items-center"
         >
-          <i className="bi bi-pen text-dark fs-1 me-3"></i>
-          <span className="fs-1 text-dark">StriveBlog</span>
+          <Logo />
         </Navbar.Brand>
-
         {token && loggedUser && (
           <>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -49,11 +42,7 @@ function Header() {
                     Add post
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item
-                    to="/"
-                    as={Link}
-                    onClick={logout}
-                  >
+                  <NavDropdown.Item to="/" as={Link} onClick={logout}>
                     Log out
                   </NavDropdown.Item>
                 </NavDropdown>

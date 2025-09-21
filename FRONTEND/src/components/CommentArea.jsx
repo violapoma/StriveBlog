@@ -8,7 +8,6 @@ import AddComment from "./AddComment";
 import Loader from "./Loader";
 
 function CommentArea() {
-  const { token } = useAuthContext();
   const { id } = useParams(); //id post
 
   const containerRef = useRef(null); //scroll automatico per accordion open
@@ -23,11 +22,7 @@ function CommentArea() {
   const [successDel, setSuccessDel] = useState(false);
 
   const fetchComments = async () => {
-    const comments = await axios.get(`/posts/${id}/comments`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const comments = await axios.get(`/posts/${id}/comments`);
     console.log("comments.data.length", comments.data.length);
     setCommentList(comments.data);
     setIsLoading(false);
@@ -63,8 +58,8 @@ function CommentArea() {
               setCommentToEdit={setCommentToEdit}
               isAccordionOpen={isAccordionOpen}
               setIsAccordionOpen={setIsAccordionOpen}
-              containerRef={containerRef} // passa ref per scroll
-              refreshComments={fetchComments} // aggiorna lista dopo submit
+              containerRef={containerRef} //passa ref per scroll
+              refreshComments={fetchComments} //aggiorna lista dopo submit
               setScrollCommentId={setScrollCommentId} //per focus sul commento edit/add
             />
           </Accordion.Body>

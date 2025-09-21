@@ -1,10 +1,41 @@
 import Author from "../models/Author.js";
 import Post from "../models/Post.js";
 
+/*
+ * ritorna i 4 autori con più commenti, poi in ordine di creazione del profilo
+ */
 export async function getAll(request, response) {
   try {
-    const authors = await Author.find();
-    response.status(200).json(authors);
+    // const authors = await Author.find();
+    const topAuthors = await Author.aggregate([
+      {
+        $lookup: {
+          from: "posts",  //collezione dei post
+          localField: "_id",  //campo in Author
+          foreignField: "author", //campo in Post
+          as: "posts"
+        }
+      },
+      {
+        $addFields: { //cicla sui post e conta i commenti
+          commentsCount: {
+            $sum: {
+              $map: {
+                input: "$posts",
+                as: "post",
+                in: { $size: "$$post.comments" } //$$-> var locali di aggregate
+              }
+            }
+          }
+        }
+      },
+      {
+        $sort: { commentsCount: -1, nome: -1 }
+      },
+      { $limit: 4 } //prendo solo i primi 4
+    ]);
+    
+    response.status(200).json(topAuthors);
   } catch (error) {
     //di solito qui gli errori 500, quelli non gestiti
     response

@@ -8,11 +8,12 @@ import {
   Alert,
 } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import InputMask from "react-input-mask";
 import axios from "../../data/axios";
 import { useAuthContext } from "../contexts/authContext";
 import Loader from "../components/Loader";
+import ErrorModal from "../components/ErrorModal";
 
 function AddAuthor({ isEdit }) {
   const { token, userId, setLoggedUser, logout } = useAuthContext();
@@ -22,9 +23,11 @@ function AddAuthor({ isEdit }) {
   const [show, setShow] = useState(false); //modale
   const [validated, setValidated] = useState(false); //validazione form
   const [avatar, setAvatar] = useState("");
-  // const [modalDelete, setModalDelete] = useState();
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const [showError, setShowError] = useState(false); 
+  const [consoleMsg, setConsoleMsg] = useState('');
+ 
   const [isLoading, setIsLoading] = useState(false); //attesa per invio dati
 
   const [formData, setFormData] = useState({
@@ -49,34 +52,6 @@ function AddAuthor({ isEdit }) {
       });
     }
   }, [isEdit, userId]);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-  const handleChanges = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const handleDelete = () => {
-    setConfirmDelete(true);
-    handleShow();
-  };
-  const deleteAccount = async () => {
-    try {
-      const res = await axios.delete(`/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log("account eliminato");
-      setTimeout(() => {
-        handleClose();
-        logout();
-        // navigate(`/`);
-      }, 1000);
-    } catch (error) {
-      console.log("errore nella cancellazione account", error);
-    }
-  };
 
   function validateBirthDate(dateStr) {
     const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/; //controllo formato && recupero cifre
@@ -111,6 +86,36 @@ function AddAuthor({ isEdit }) {
     return { valid: true, message: "" };
   }
 
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const handleChanges = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleDelete = () => {
+    setConfirmDelete(true);
+    handleShow();
+  };
+  const deleteAccount = async () => {
+    try {
+      const res = await axios.delete(`/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log("account eliminato");
+      setTimeout(() => {
+        handleClose();
+        logout();
+        // navigate(`/`);
+      }, 1000);
+    } catch (error) {
+      setConsoleMsg("An error occurred while deleting your account 😿 try again later");
+      setShowError(true);
+      console.log("errore nella cancellazione account", error);
+    }
+  };
+
   const addAvatar = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -124,12 +129,12 @@ function AddAuthor({ isEdit }) {
 
   const fetchAuthor = async () => {
     try {
-      const author = await axios.get(`/authors/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const author = await axios.get(`/authors/${userId}`);
       console.log("editing author", author.data);
       setFormData({ ...author.data });
     } catch (err) {
+      setConsoleMsg("An error occurred while fetching your accunt 😿 try again later");
+      setShowError(true); 
       console.log("errore fetch autore da modificare", err);
     }
   };
@@ -152,9 +157,7 @@ function AddAuthor({ isEdit }) {
     try {
       let res;
       isEdit
-        ? (res = await axios.put(`/me/edit`, formData, {
-            headers: { Authorization: `Bearer ${token}` },
-          }))
+        ? (res = await axios.put(`/me/edit`, formData))
         : (res = await axios.post("/auth/register", formData));
       console.log("Autore creato/modificato con successo");
 
@@ -183,6 +186,8 @@ function AddAuthor({ isEdit }) {
         navigate('/');
       }, 1000);
     } catch (error) {
+      setConsoleMsg(`An error occurred while ${isEdit ? 'editing' : 'creating'} your account 😿 try again later`);
+      setShowError(true); 
       console.error("Errore durante la creazione/modifica dell'autore", error);
     } finally {
       setIsLoading(false);
@@ -341,6 +346,8 @@ function AddAuthor({ isEdit }) {
           )}
         </Modal.Body>
       </Modal>
+
+      <ErrorModal consoleMsg={consoleMsg} show={showError} setShow={setShowError} />
     </Container>
   );
 }

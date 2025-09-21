@@ -3,8 +3,6 @@ import Post from "../models/Post.js";
 import Author from "../models/Author.js";
 import mailer from "../helpers/mailer.js";
 
-//TODO: fai middlewqare per la validazione dell'id e del post
-
 /* recupera tutti i commenti di un articolo */
 export async function getAll(request, response) {
   const { id } = request.params;

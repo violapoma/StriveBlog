@@ -108,5 +108,4 @@ export async function login(request, response) {
 
 export async function redirectToMe(request, response, next) {
   response.redirect(`${process.env.FRONTEND_HOST}/auth/google-callback?jwt=${request.user.jwt}`); //messo da me in request.user.jwt
-  //nel frontend TODO: mettilo nel localstorage
 }

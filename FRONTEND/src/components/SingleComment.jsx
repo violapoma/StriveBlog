@@ -4,9 +4,10 @@ import { useAuthContext } from "../contexts/authContext";
 import { useEffect, useRef, useState } from "react";
 import axios from "../../data/axios";
 import parse from "html-react-parser"; //per quill
+import ErrorModal from "./ErrorModal";
 
 function SingleComment({ comment, postId, setCommentToEdit, successDel, setSuccessDel, scrollToThis, setIsAccordionOpen }) {
-  const { token, loggedUser } = useAuthContext();
+  const { loggedUser } = useAuthContext();
   const date = new Date(comment.updatedAt); //prendo questo, metti caso che faccio al modifica
 
   //modale di cancellazione
@@ -16,6 +17,7 @@ function SingleComment({ comment, postId, setCommentToEdit, successDel, setSucce
 
   //messaggio di errore per lo user
   const [consoleMsg, setConsoleMsg] = useState("");
+  const [showError, setShowError] = useState(false); 
 
   const formatted = date.toLocaleDateString("it-IT", {
     day: "2-digit",
@@ -37,7 +39,7 @@ function SingleComment({ comment, postId, setCommentToEdit, successDel, setSucce
   const deleteComment = async () => {
     try {
       const deleting = await axios.delete(`/posts/${postId}/comments/${comment._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        //headers: { Authorization: `Bearer ${token}` },
       });
       setSuccessDel(true);
       setTimeout(() => {
@@ -49,6 +51,7 @@ function SingleComment({ comment, postId, setCommentToEdit, successDel, setSucce
       setConsoleMsg(
         "An error occurred while deleting your comment, try again later"
       );
+      setShowError(true);
     }
   };
 
@@ -118,6 +121,8 @@ function SingleComment({ comment, postId, setCommentToEdit, successDel, setSucce
           </Modal.Footer>
         )}
       </Modal>
+      
+      <ErrorModal consoleMsg={consoleMsg} show={showError} setShow={setShowError}/>
     </>
   );
 }

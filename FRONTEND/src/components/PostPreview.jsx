@@ -1,20 +1,8 @@
-import { Badge, Col, Image, Row } from "react-bootstrap";
+import { useEffect } from "react";
+import { Badge, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function PostPreview({ post }) {
-  function getTextPreview(html, maxLength = 200) {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = html;
-    const text = tempDiv.textContent || tempDiv.innerText || ""; //prendo solo la parte leggibile, senza tag
-    return text.length > maxLength
-      ? text.slice(0, maxLength).trim() + "..." // tronco a 200 caratteri
-      : text;
-  }
-
-  function normalizeCategory(category) {
-    console.log('norm category', category.toLowerCase().replace(/\s+/g, "-") )
-    return category.toLowerCase().replace(/\s+/g, "-");
-  }
 
   const knownCategories = ["coding", "mental-health", "vegan", "gaming", 'world-news','anime'];
   const normalized = normalizeCategory(post.category);
@@ -22,6 +10,22 @@ function PostPreview({ post }) {
   const categoryClass = isKnown
     ? `fw-normal badge-${normalized}`
     : "fw-semibold badge-default";
+    
+  useEffect(()=>{console.log(post), []});
+
+  function getTextPreview(html, maxLength = 200) {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    const text = tempDiv.textContent || tempDiv.innerText || ""; //prendo solo la parte leggibile, senza tag
+    return text.length > maxLength
+      ? text.slice(0, maxLength).trim() + "..." // tronco a 200 caratteri
+      : text;
+  };
+
+  function normalizeCategory(category) {
+    console.log('norm category', category.toLowerCase().replace(/\s+/g, "-") )
+    return category.toLowerCase().replace(/\s+/g, "-");
+  };
 
   return (
     <Link to={`/posts/${post._id}`}>

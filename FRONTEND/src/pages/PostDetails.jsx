@@ -6,26 +6,30 @@ import { Alert, Button, Container, Modal } from "react-bootstrap";
 import { useAuthContext } from "../contexts/authContext";
 import Loader from "../components/Loader";
 import CommentArea from "../components/CommentArea";
+import ErrorModal from "../components/ErrorModal";
 
 function PostDetails() {
   const navigate = useNavigate();
   const { id } = useParams(); //id del post
-  const {token, userId} = useAuthContext(); 
+  const { token, userId } = useAuthContext();
 
   const [post, setPost] = useState();
   const [dateToShow, setDateToShow] = useState("");
   const [show, setShow] = useState(false);
   const [successDel, setSuccessDel] = useState(false);
-  const [isMine, setIsMine] = useState(false); 
+  const [isMine, setIsMine] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [showError, setShowError] = useState(false);
+  const [consoleMsg, setConsoleMsg] = useState("");
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const deletePost = async () => {
     try {
-      const res = axios.delete(`/posts/${id}`,  {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = axios.delete(`/posts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       console.log("deleted successfully");
       setSuccessDel(true);
@@ -35,26 +39,29 @@ function PostDetails() {
         navigate("/");
       }, 1000);
     } catch (e) {
+      setConsoleMsg("An error occurred while deleting your post 😿 try again later");
+      setShowError(true);
       console.log("errore nella delete", e);
     }
   };
 
   const getPost = async () => {
     try {
-      const res = await axios.get(`/posts/${id}`,  {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.get(`/posts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       console.log("post", res.data);
-      console.log('res.data.author._id,', res.data.author._id);
-      console.log('userId', userId); 
-      if (res.data.author._id == userId)
-        setIsMine(true); 
+      console.log("res.data.author._id,", res.data.author._id);
+      console.log("userId", userId);
+      if (res.data.author._id == userId) setIsMine(true);
 
       setPost(res.data);
     } catch (e) {
+      setConsoleMsg("An error occurred while fetching your post 😿 try again later");
+      setShowError(true);
       console.log("errore nel recupero del post", e);
-    } finally{
-      setLoading(false); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,21 +82,27 @@ function PostDetails() {
   useEffect(() => {
     if (post) {
       setDateToShow(getDate(post.createdAt));
-      console.log('ismine', isMine);
+      console.log("ismine", isMine);
     }
   }, [post]);
 
   return (
     <>
-      {loading ? <Loader /> :  (
+      {loading ? (
+        <Loader />
+      ) : (
         <Container>
           <div id="postContent">
             <div className="border-bottom my-3 pb-3">
               <h1 className="fw-bold">{post.title}</h1>
               <div className="d-flex align-items-center justify-content-between">
                 <div className="w-50 d-flex justify-content-evenly align-items-center">
-                 
-                  <Link to={isMine ? '/me' : `/authors/${post.author._id}`} className="authorLink">{post.author.nome} {post.author.cognome}</Link>
+                  <Link
+                    to={isMine ? "/me" : `/authors/${post.author._id}`}
+                    className="authorLink"
+                  >
+                    {post.author.nome} {post.author.cognome}
+                  </Link>
                   <span className="mx-3">·</span>
                   <span>
                     {post.readTime.value} {post.readTime.unit} read
@@ -99,15 +112,19 @@ function PostDetails() {
                 </div>
                 {isMine && (
                   <div>
-                  <Link to={`/posts/edit-post/${id}`}>
-                    <Button variant="outline-secondary" className="border-0">
-                      <i className="bi bi-pencil-square" />
+                    <Link to={`/posts/edit-post/${id}`}>
+                      <Button variant="outline-secondary" className="border-0">
+                        <i className="bi bi-pencil-square" />
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline-secondary"
+                      className="border-0"
+                      onClick={handleShow}
+                    >
+                      <i className="bi bi-trash" />
                     </Button>
-                  </Link>
-                  <Button variant="outline-secondary" className="border-0" onClick={handleShow}>
-                    <i className="bi bi-trash" />
-                  </Button>
-                </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -144,7 +161,7 @@ function PostDetails() {
         )}
       </Modal>
 
-   
+      <ErrorModal consoleMsg={consoleMsg} show={showError} setShow={setShowError} />
     </>
   );
 }

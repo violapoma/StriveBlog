@@ -5,12 +5,16 @@ import axios from "../../data/axios";
 import { useAuthContext } from "../contexts/authContext";
 import PostPreview from "../components/PostPreview";
 import Loader from "../components/Loader";
+import ErrorModal from "../components/ErrorModal";
 
 function UserProfile({ isMe }) {
   const { id } = useParams();
   const { token, userId } = useAuthContext();
 
-  const idToUse = id ? id : userId;
+  // const idToUse = id ? id : userId;
+
+  const [showError, setShowError] = useState(false);
+  const [consoleMsg, setConsoleMsg] = useState(''); 
 
   const [author, setAuthor] = useState();
   const [authorPosts, setAuthorPosts] = useState([]);
@@ -19,15 +23,6 @@ function UserProfile({ isMe }) {
   const [loadingPosts, setLoadingPosts] = useState(true);
 
   const getAuthor = async () => {
-    // try {
-    //   const author = await axios.get(`/authors/${id}`,  {
-    //     headers: { Authorization: `Bearer ${token}` }
-    //   });
-    //   console.log("author", author.data);
-    //   setAuthor(author.data);
-    // } catch (e) {
-    //   console.log("errore nel recupero dell'autore", e);
-    // }
     let url;
     if (isMe) {
       url = "/me";
@@ -36,7 +31,6 @@ function UserProfile({ isMe }) {
     } else {
       return;
     }
-
     console.log("isMe", isMe, "ENDPOINT", url);
     try {
       const res = await axios.get(url, {
@@ -44,6 +38,8 @@ function UserProfile({ isMe }) {
       });
       setAuthor(res.data);
     } catch (err) {
+      setConsoleMsg("An error occurred while fetching your profile 😿 try again later");
+      setShowError(true);
       console.error(err);
     } finally {
       setLoadingUser(false);
@@ -60,22 +56,12 @@ function UserProfile({ isMe }) {
       if (!Array.isArray(allPosts.data)) {
         throw new Error("Dati dei post non validi");
       }
-
-      console.log("id ", id);
-      console.log("userId ", userId);
-      console.log("idToUse ", idToUse);
-
-      // const filteredPosts = allPosts.data.filter(
-      //   (post) =>
-      //     post.author &&
-      //     post.author._id &&
-      //     post.author._id.toString() === idToUse
-      // );
-
       
       console.log("Posts filtrati per autore:", allPosts.data);
       setAuthorPosts(allPosts.data);
     } catch (err) {
+      setConsoleMsg("An error occurred while fetching your posts 😿 try again later");
+      setShowError(true);
       console.error("Errore nel recupero dei post dello user:", err);
     } finally {
       setLoadingPosts(false);
@@ -83,8 +69,7 @@ function UserProfile({ isMe }) {
   };
 
   useEffect(() => {
-    if (!token) return; // esci subito se non c’è token
-
+    if (!token) return; 
     getAuthor();
   }, [id, token, isMe]);
 
@@ -157,6 +142,7 @@ function UserProfile({ isMe }) {
           </Col>
         </Row>
       )}
+      <ErrorModal consoleMsg={consoleMsg} show={showError} setShow={setShowError} />
     </>
   );
 }

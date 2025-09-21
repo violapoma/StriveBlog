@@ -1,4 +1,4 @@
-import { Button, Col, Container, InputGroup, Row } from "react-bootstrap";
+import { Button, Col, InputGroup, Row } from "react-bootstrap";
 import UserPreview from "../components/UserPreview";
 import { Form } from "react-bootstrap";
 import { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import { useAuthContext } from "../contexts/authContext";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import MyPagination from "../components/MyPagination";
+import ErrorModal from "../components/ErrorModal";
 
 function LoggedHome() {
   const [authors, setAuthors] = useState([]);
@@ -17,12 +18,14 @@ function LoggedHome() {
 
   const [searchString, setSearchString] = useState("");
 
+  const [showError, setShowError] = useState(false);
+  const [consoleMsg, setConsoleMsg] = useState(''); 
+
   //paginazione
   const [howManyPages, setHowManyPages] = useState(0);
   const [active, setActive] = useState(
     parseInt(new URLSearchParams(window.location.search).get("page")) || 1
   );
-  const [postsForPage, setPostsForPage] = useState([]);
   const perPage = 3;
 
   const navigate = useNavigate();
@@ -36,13 +39,6 @@ function LoggedHome() {
     }
     console.log("sono nella home");
   }, [token]);
-
-  // //paginazione
-  // useEffect(() => {
-  //   const startIdx = perPage * (active - 1);
-  //   const endIdx = startIdx + perPage;
-  //   setPostsForPage(posts.slice(startIdx, endIdx));
-  // }, [posts, active]);
 
   //ricerca
   useEffect(() => {
@@ -58,17 +54,18 @@ function LoggedHome() {
     if (value === "") {
       getPosts(1);
     } else {
-      getPosts(1); // puoi anche filtrare mentre scrivi
+      getPosts(1); 
     }
   };
 
   const getAuthors = async () => {
     try {
       const res = await axios.get("/authors");
-      console.log("authors", res.data);
-      const just4authors = res.data.slice(0, 4);
-      setAuthors(just4authors);
+      console.log("authors", res.data); //filtro da backend
+      setAuthors(res.data);
     } catch (e) {
+      setConsoleMsg("An error occurred while fetching our top authors 😿 try again later");
+      setShowError(true); 
       console.log("errore nel recupero degli autori", e);
     } finally {
       setLoadingAuthors(false);
@@ -81,15 +78,17 @@ function LoggedHome() {
       if (searchString) params.title = searchString;
 
       const res = await axios.get("/posts", {
-        headers: { Authorization: `Bearer ${token}` },
+      //  headers: { Authorization: `Bearer ${token}` },
         params,
       });
 
       console.log("posts ricevuti", res.data.posts);
       setPosts(res.data.posts);
       setHowManyPages(res.data.totalPages);
-      setActive(res.data.page); // assicuriamoci che la pagina corrente sia aggiornata
+      setActive(res.data.page);
     } catch (e) {
+      setConsoleMsg("An error occurred while fetching our posts 😿 try again later");
+      setShowError(true); 
       console.log("errore nel recupero dei post", e);
     } finally {
       setLoadingPosts(false);
@@ -163,35 +162,10 @@ function LoggedHome() {
           <p>No authors found.</p>
         )}
       </section>
+
+      <ErrorModal consoleMsg={consoleMsg} show={showError} setShow={setShowError} />
     </>
   );
 }
 
 export default LoggedHome;
-
-/**
- * home coi post
- 
-  const [posts, setPosts] = useState([]); 
-
-  async function getPosts() {
-    const resultPosts = await getAll(); 
-    setPosts(resultPosts.data);
-  }
-
-  useEffect(
-    getPosts(), 
-    []); 
-
-  return(
-   <Container>
-  <Row>
-    {posts && posts.map(post => (
-      <Col key={post.id}>
-        <PostPreview post={post} />
-      </Col>
-    ))}
-  </Row>
-</Container>
-  )
- */

@@ -28,9 +28,9 @@ export async function getAll(request, response) {
     const totalCount = await Post.countDocuments(matchStage);
     const totalPages = Math.ceil(totalCount / perPage);
 
-    //aggregate sistema i dati su DB e manda quelli che servono
+    //aggregate metodo per eseguire pipeline di elaborazioni di dati, li sistema e manda quelli che servono
     const posts = await Post.aggregate([ 
-      { $match: matchStage },
+      { $match: matchStage }, //filtra i documenti
       {
         $addFields: {
           commentsCount: { $size: "$comments" } //aggiungo #commenti; virtuale
@@ -42,12 +42,14 @@ export async function getAll(request, response) {
       { $skip: (page - 1) * perPage }, //indici di paginazione
       { $limit: perPage }, //limite per pagina
       {
-        $lookup: { //aka populate
+        $lookup: { //aka populate -> join
           from: "authors",
           localField: "author",
           foreignField: "_id",
           as: "author"
         }
+      },{
+        $unwind: "$author" //autore è sempre uno, così non ritorna un array
       }
     ]);
 
@@ -70,9 +72,6 @@ export async function getAll(request, response) {
 export async function get(request, response) {
   try {
     const { id } = request.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response.status(404).json({ message: "ID non valido" });
-    }
     const post = await Post.findById(id).populate("author");
 
     if (!post)
@@ -129,14 +128,10 @@ export async function add(request, response) {
 
 /*
  * modifica un post
- * TODO: controlla che l'id del post appartenga all'id dell'autore
  */
 export async function edit(request, response) {
   try {
-    const { id } = request.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response.status(404).json({ message: "ID non valido" });
-    }
+    const { id } = request.params; //id post
 
     const { category, title, cover, readTime, content } = request.body;
 
@@ -149,6 +144,7 @@ export async function edit(request, response) {
     if (!updatedPost) {
       return response.status(400).json({ message: "Post non trovato", error });
     }
+
     const html = `
     <h1>Edited successfully</h1>
     <p>Your post with title ${title} was updated successfully. <a href='${process.env.FRONTEND_HOST}/posts/${updatedPost._id}'> Check it out </a> </p>
@@ -182,10 +178,6 @@ export async function addCover(request, response) {
         "https://res.cloudinary.com/dm9gnud6j/image/upload/v1757097390/noimg_tl6gzb.jpg";
     const { id } = request.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response.status(404).json({ message: "ID non valido" });
-    }
-
     const post = await Post.findByIdAndUpdate(
       id,
       { cover: filePath },
@@ -209,9 +201,6 @@ export async function addCover(request, response) {
 export async function remove(request, response) {
   try {
     const { id } = request.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response.status(404).json({ message: "ID non valido" });
-    }
     const toRemove = await Post.findByIdAndDelete(id);
     if (!toRemove) {
       return response.status(404).json({ message: "post non trovato" });

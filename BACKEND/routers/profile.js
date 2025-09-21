@@ -1,7 +1,7 @@
 import express from "express";
-import authMW from "./middlewares/authMW.js";
-import { addAvatar, deleteMe, edit, getMe } from "./controllers/profile.js";
-import {uploadAvatar} from "./middlewares/uploadCloudinary.js";
+import authMW from "../middlewares/authMW.js";
+import { addAvatar, deleteMe, edit, getMe } from "../controllers/profile.js";
+import {uploadAvatar} from "../middlewares/uploadCloudinary.js";
 
 const profileRouter = express.Router();
 
