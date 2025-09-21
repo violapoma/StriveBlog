@@ -15,8 +15,8 @@ authRouter.get(
 
 authRouter.get(
   "/google-callback",
-  passport.authenticate("google", { session: false }),
+  passport.authenticate("google", { session: false }), //false perché non stiamo usando i coockies
   redirectToMe
-); //false perché non stiamo usando i coockies
+); 
 
 export default authRouter;

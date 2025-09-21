@@ -9,7 +9,6 @@ import { validateId } from "../middlewares/validateId.js";
 const postsRouter = express.Router(); 
 postsRouter.get('/', getAll);
 postsRouter.post('/', authMW, validatePost, add);
-//postsRouter.get('/search', miaFun); 
 postsRouter.get('/:id', validateId, get);
 postsRouter.put('/:id', authMW, validateId, validatePost, edit); 
 postsRouter.patch('/:id/cover', authMW, validateId, uploadCover.single('cover'), addCover); //cover nome campo da passare

@@ -11,25 +11,22 @@ import authRouter from "./routers/auth.js";
 import profileRouter from "./routers/profile.js";
 import passport from "passport";
 import googleStrategy from "./config/passportConfig.js";
+import { validateId } from "./middlewares/validateId.js";
 
 const server = express(); //server di base, che va personalizzato
 
 const port = process.env.PORT; //da file .env
-//Server.use(midA); //mw globale
 server.use(cors()); //middleware; va messo più in alto possibile altrimenti da errore
-server.use(morgan("tiny")); //verbo indirizzo res.status peso - tempo_impiegato
-server.use(express.json()); //per il parse; middleware
+server.use(morgan("tiny")); //output: verbo indirizzo res.status peso - tempo_impiegato
+server.use(express.json()); //per il parse; 
 
 passport.use(googleStrategy); 
 
-//server.use(middErr1); //catch errori vari
-//server.use('/authors', [midA, midB], authorsRouter); //mw propri della rotta authors
-// server.use('/api/v1/authors', authorRouter); //usa il router per author
 server.use("/auth", authRouter);
 server.use('/me', profileRouter); 
-server.use("/authors", authorsRouter); //mw
-server.use("/posts", postsRouter); //mw ; tutti in ordine di esecuzione
-server.use("/posts", commentsRouter);
+server.use("/authors", authorsRouter); 
+server.use("/posts", postsRouter); 
+server.use("/posts", validateId, commentsRouter);
 
 connectDB();
 server.listen(port, () => console.log(`server avviato sulla porta ${port}`)); //sta sempre in ascolto

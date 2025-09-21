@@ -1,36 +1,6 @@
 import { verifyJWT } from "../helpers/jwt.js";
 import Author from "../models/Author.js";
 
-/*
-async function authMW(request, response, next) {
-
-  //recupero il token dagli headers
-  if (request.headers.authorization) 
-    return response.status(401).send();
-
-  const parts = request.headers.authorization.split(" ");
-  if (parts.length != 2) 
-    return response.status(401).send();
-  if (parts[0] != "Bearer") 
-    return response.status(401).send();
-  const jwtToken = parts;
-
-  //verificoil token JWT
-  try {
-    const payload = await verifyJWT(); 
-      //se va bene -> recupero utente
-    const authUser = await Author.findById(payload.userId);
-    if (!authUser)
-      throw new Error('No user');
-      
-    //aggiunto user alla request -> request.authUser
-    request.authUser = authUser; 
-    next(); 
-  } catch(err){
-      response.status(501).send({message: 'non autorizzato'}); 
-  }
-}
-*/
 
 async function authMW(request, response, next) {
   const headerAuth = request.headers.authorization || "";
@@ -65,3 +35,35 @@ async function authMW(request, response, next) {
 }
 
 export default authMW;
+
+
+/*
+async function authMW(request, response, next) {
+
+  //recupero il token dagli headers
+  if (request.headers.authorization) 
+    return response.status(401).send();
+
+  const parts = request.headers.authorization.split(" ");
+  if (parts.length != 2) 
+    return response.status(401).send();
+  if (parts[0] != "Bearer") 
+    return response.status(401).send();
+  const jwtToken = parts;
+
+  //verificoil token JWT
+  try {
+    const payload = await verifyJWT(); 
+      //se va bene -> recupero utente
+    const authUser = await Author.findById(payload.userId);
+    if (!authUser)
+      throw new Error('No user');
+      
+    //aggiunto user alla request -> request.authUser
+    request.authUser = authUser; 
+    next(); 
+  } catch(err){
+      response.status(501).send({message: 'non autorizzato'}); 
+  }
+}
+*/

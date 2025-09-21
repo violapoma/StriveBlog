@@ -1,8 +1,6 @@
-import mongoose from "mongoose";
 import Post from "../models/Post.js";
 import sanitizeHtml from "../sanitize.js";
 import mailer from "../helpers/mailer.js";
-import Author from "../models/Author.js";
 
 /*
  * recupera 

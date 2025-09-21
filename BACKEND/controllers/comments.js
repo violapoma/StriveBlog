@@ -58,12 +58,7 @@ export async function get(request, response) {
 export async function add(request, response) {
   try {
     const { text, author } = request.body;
-    if (!mongoose.Types.ObjectId.isValid(author))
-      return response.status(404).json({ message: "ID autore non valido" });
-
     const { id } = request.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return response.status(404).json({ message: "ID post non valido" });
 
     const authorDB = await Author.findById(author);
     if (!authorDB)
@@ -110,14 +105,7 @@ export async function add(request, response) {
 export async function edit(request, response) {
   try {
     const { text, author } = request.body;
-    if (!mongoose.Types.ObjectId.isValid(author))
-      return response.status(404).json({ message: "ID autore non valido" });
-
     const { id, cId } = request.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return response.status(404).json({ message: "ID post non valido" });
-    if (!mongoose.Types.ObjectId.isValid(cId))
-      return response.status(404).json({ message: "ID commento non valido" });
 
     const authorDB = await Author.findById(author);
     if (!authorDB)
@@ -148,10 +136,6 @@ export async function edit(request, response) {
 export async function remove(request, response) {
   try {
     const { id, cId } = request.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return response.status(404).json({ message: "ID post non valido" });
-    if (!mongoose.Types.ObjectId.isValid(cId))
-      return response.status(404).json({ message: "ID commento non valido" });
 
     const post = await Post.findById(id);
     if (!post)
