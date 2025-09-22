@@ -24,10 +24,7 @@ function App() {
             {/* l'unica rotta pubblica è login/register */}
             <Route element={<GuestsRoutes />}>
               <Route path="/login" element={<Login />} />
-              <Route
-                path="/auth/google-callback"
-                element={<GoogleCallback />}
-              />
+              <Route path="/auth/google-callback" element={<GoogleCallback />} />
               <Route path="/auth/register" element={<AddAuthor />} />
             </Route>
             <Route element={<ProtectedRoutes />}>
@@ -39,8 +36,6 @@ function App() {
               <Route path="/me/edit" element={<AddAuthor isEdit={true} />} />
               <Route path="/authors/:id" element={<UserProfile />} />
             </Route>
-
-            {/* <Route path="/authors/edit-author/:id" element={<AddAuthor />} /> */}
           </Routes>
         </Container>
       </AuthProvider>
@@ -49,3 +44,6 @@ function App() {
 }
 
 export default App;
+
+
+
