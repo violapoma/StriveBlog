@@ -5,7 +5,7 @@
 ## Table of contents
 * [Models](#models)
 * [Routers](#routers)
-* [App](#app.jsx)
+* [App](#app)
 * [AuthContext](#authcontext)
 ## Models
 * **Author**<br>
@@ -85,10 +85,12 @@
   * classica CRUD con getOne, getAll, edit, add, delete.
 <br><br>
 
-## App.jsx - _struttura del progetto lato frontend_ <br><br>
+## App 
+- _struttura del progetto lato frontend_ <br><br>
 L'applicativo è costruito in modo da obbligare l'utente a loggarsi, le uniche pagine che potrà visitare come utente guest sono la login e la register.<br><br>
 ![struttra progetto](/FRONTEND/src/assets/struttraStriveBlog.png)
-## AuthContext - _gestisce l'utente loggato lato frontend_
+## AuthContext 
+- _gestisce l'utente loggato lato frontend_ <br><br>
 Contiene lo stato per il token e per l'utente loggato; tutta App è wrappata dentro a questo componente in modo che si possa accedere alle informazioni di loggedUser in qualsiasi momento.<br> Contiene inoltre le funzioni login e logout. Rispettivamente, _login(token)_ si occupa di settare il token nel localStorage e di navigare alla home dell'utente loggato, mentre _logout()_ elimina la voce token dal localStorage, setta loggedUser a null e riporta alla pagina di login.
 <br><br>
 [Torna su](#frontend-e-backend)
