@@ -192,6 +192,9 @@ svg:hover {
   object-fit: cover;
   border-radius: 50%;
 }
+.vh50{
+  height: 50vh;
+}
 .vh85{
   height: 85vh;
 }

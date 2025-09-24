@@ -12,6 +12,7 @@ import GuestsRoutes from "./components/GuestsRoutes";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import { AuthProvider } from "./contexts/authContext";
 import ScrollToTop from "./components/ScrollToTop";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
               <Route path="/me" element={<UserProfile isMe={true} />} />
               <Route path="/me/edit" element={<AddAuthor isEdit={true} />} />
               <Route path="/authors/:id" element={<UserProfile />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </Container>

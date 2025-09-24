@@ -28,5 +28,14 @@ server.use("/authors", authorsRouter);
 server.use("/posts", postsRouter); 
 server.use("/posts", commentsRouter);
 
+server.use((req, res, next) => {
+  res.status(404).json({ message: "Risorsa non trovata" });
+});
+
+server.use((err, req, res, next) => {
+  console.error("Errore:", err);
+  res.status(500).json({ message: "Errore interno del server" });
+});
+
 connectDB();
 server.listen(port, () => console.log(`server avviato sulla porta ${port}`)); //sta sempre in ascolto
